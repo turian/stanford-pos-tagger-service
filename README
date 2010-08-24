@@ -1,0 +1,28 @@
+wget 'http://nlp.stanford.edu/software/stanford-postagger-full-2010-05-26.tgz'
+
+Here you have:
+
+1. a jar archive including the Stanford Postagger XML-RPC service
+2. a python client to test the service
+
+
+How to start the service:
+-----------------------------
+- Copy the tagger_server.jar into "stanford-postagger-full-2010-05-26"
+- Change to directory "stanford-postagger-full-2010-05-26"
+- Type at command prompt:
+ java -classpath /path/to/xmlrpc-1.2-b1.jar;tagger_server.jar;stanford-postagger-2010-05-26.jar edu.stanford.main.MaxentTaggerServer <modelFile> [port]
+
+e.g.
+java -classpath /path/to/xmlrpc-1.2-b1.jar;tagger_server.jar;
+stanford-postagger-2010-05-26.jar edu.stanford.main.MaxentTaggerServer models\left3words-distsim-wsj-0-18.tagger 8050
+
+
+
+Here is the python client, in client.py
+
+Invoke at command prompt:
+python client.py <inputFile> [port]
+
+e.g:
+python client.py /stanford-postagger-full-2010-05-26/sample-input.txt 8050
