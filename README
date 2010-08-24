@@ -1,24 +1,266 @@
-Getting started
----------------
-    wget http://ftp.us.xemacs.org/pub/mirrors/maven2/xmlrpc/xmlrpc/1.2-b1/xmlrpc-1.2-b1.jar
-    wget http://nlp.stanford.edu/software/stanford-postagger-full-2010-05-26.tgz
-    tar zxvf stanford-postagger-full-2010-05-26.tgz
+=====================================================================
+                                                                       
+                              ======                                   
+                              README                                   
+                              ======                                   
+                                                                       
+                          Stanford POS Tagger as XML-RPC service 
+                          22 August 2010
 
-Here you have:
+	MaxentTaggerXML-RPC Service applicable to Stanford POS Tagger, v. 3.0 - 2010-05-10 (http://nlp.stanford.edu/software/tagger.shtml)
+                                                                      
+	Copyright (C) 2010-present, MetaOptimize LLC
 
-1. a jar archive including the Stanford Postagger XML-RPC service
-2. a python client to test the service
+  Coded by Ali Afshar (it.zvision@yahoo.com)
+                                                                       
+=====================================================================
 
-How to start the service
-------------------------
-- Change to directory "stanford-postagger-full-2010-05-26"
-- Type at command prompt:
-    java -cp ../xmlrpc-1.2-b1.jar:../tagger_server.jar:stanford-postagger-2010-05-26.jar edu.stanford.main.MaxentTaggerServer models/left3words-distsim-wsj-0-18.tagger 8080
+Contents:
+---------
 
-How to run the client
-------------------------
+1. Installation 
+
+2. Getting started
+
+   - Running the server
+   - Java Client Example
+   - Python Client Example
+
+3. History 
+
+4. Copyright
+
+5. How it is done
+
+
+----------------------------------------------------------------------
+
+NOTE:
+-----
+
+The service is packed and delivered as a patch
+
+It contains four modules:
+
+1) edu/stanford/main/MaxentTaggerServer.java
+   This is the server module. 
+
+2) edu/stanford/nlp/tagger/maxent/MaxentTagger.java	
+	 This is a copy of the module edu/stanford/nlp/tagger/maxent/MaxentTagger.java from Stanford POS Tagger, v. 3.0 - 2010-05-10 with minor changes.
+	 
+	 Visibilty for the three following methods have been changed.
+	 
+	 - protected TokenizerFactory<? extends HasWord> chooseTokenizerFactory()
+	 changed to:
+	 		public TokenizerFactory<? extends HasWord> chooseTokenizerFactory()
+	 		
+	 - private static String getTsvWords(ArrayList<TaggedWord> s)	
+	 changed to:
+	 		public static String getTsvWords(ArrayList<TaggedWord> s)
+	 		
+	 - private static void printErrWordsPerSec(long milliSec, int numWords)
+	 changed to:
+			public static void printErrWordsPerSec(long milliSec, int numWords)
+			
+3) edu/stanford/nlp/tagger/maxent/TaggerConfig.java
+	 This is a copy of the module edu/stanford/nlp/tagger/maxent/TaggerConfig.java from Stanford POS Tagger, v. 3.0 - 2010-05-10 extended with serverPort parameter
+
+4) edu/stanford/nlp/ling/CoreAnnotations.java
+	 This is a copy of the module edu/stanford/nlp/ling/CoreAnnotations.java from Stanford POS Tagger, v. 3.0 - 2010-05-10 with no changes 
+	 (MaxentTagger.java requires this, shouldn't really need it since we do not make any changes, (?) maybe a Generic-related issue in the implementaion of the TypesafeMap and/or CoreMap)  
+
+
+The Service is developed in Java 1.6, on Eclipse under Win XP. 
+It has been also tested on Windows XP and Windows 2000.  
+
+
+----------------------------------------------------------------------
+
+1. Installation:
+----------------
+
+Download the Stanford Postagger XML-RPC Service source. 
+
+	 The src structure is: 
+	 
+		-src  
+			-edu
+				-stanford
+					-main
+						- MaxentTaggerServer.java
+					-nlp
+						-ling
+							- CoreAnnotations.java
+						-tagger
+							-maxent
+								- MaxentTagger.java
+								- TaggerConfig.java		
+		
+	Compile and pack class files to a jar (e.g. tagger_server.jar) and copy into stanford-postagger-full-2010-05-26 home directory (TAGGER_HOME).
+	 	
+ 
+				
+----------------------------------------------------------------------
+
+2. Getting started:
+-------------------
+
+- Get stanford-postagger-full-2010-05-26.
+  wget http://nlp.stanford.edu/software/stanford-postagger-full-2010-05-26.tgz
+  tar zxvf stanford-postagger-full-2010-05-26.tgz
+    
+- Copy the tagger_server.jar into the stanford-postagger-full-2010-05-26 home directory (TAGGER_HOME)	 
+	e.g. E:\progtams\stanford-postagger-full-2010-05-26\tagger_server.jar
+
+- set TAGGER_RPC=%TAGGER_HOME%\tagger_server.jar;%TAGGER_HOME%\stanford-postagger-2010-05-26.jar
+	Note tagger_server.jar comes first.
+		
+- Download:
+    http://ftp.us.xemacs.org/pub/mirrors/maven2/xmlrpc/xmlrpc/1.2-b1/xmlrpc-1.2-b1.jar
+	and add it also to your classpath.
+    
+
+* Running the server
+
+Type at command prompt:
+		
+		java -cp %TAGGER_RPC%;%CLASSPATH% edu.stanford.main.MaxentTaggerServer -model <modelFile> [-serverPort <port>] [other parameters]  ; See TaggerConfig.java for a list of relevant parameters
+		
+		e.g. 
+		java -cp %TAGGER_RPC%;%CLASSPATH% edu.stanford.main.MaxentTaggerServer -model models\left3words-distsim-wsj-0-18.tagger -serverPort 8090 
+		
+
+* Java Client Example
+=====================================================
+see TaggerClient.java
+
+How to execute the Java client:
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+
+Assume xmlrpc-1.2-b1.jar is included in the classpath.
+ 
+Compile and then run the client by typing at command prompt: 
+
+	java -ea TaggerClient <inputFile> [port]    // Default port 8000 is used
+	
+		e.g.
+		java -ea TaggerClient E:\tmp\stanford-postagger-2010-05-26\sample-input.txt 8090
+
+	
+	If xmlrpc-1.2-b1.jar is not included in your classpath:
+	
+		java -ea -cp ./;E:\programs\tools\xmlrpc-1.2-b1\xmlrpc-1.2-b1.jar;	TaggerClient E:\tmp\stanford-postagger-2010-05-26\sample-input.txt 8090
+		
+
+
+* Python Client Example, 
+=====================================================
+
+See client.py
+
+How to run the python client
+'''''''''''''''''''''''''''''''''''''''''''''''''''
+
 Invoke at command prompt:
     python client.py <inputFile> [port]
 
-e.g:
-    python client.py stanford-postagger-full-2010-05-26/sample-input.txt 8080
+e.g.
+		python client.py  E:/Temp/stanford-postagger-full-2010-05-26/sample-input.txt  8090  
+
+----------------------------------------------------------------------
+
+3. Further enhancement:
+-----------------------
+
+- test it with the latest XML-RPC library.
+
+-----------------------------------------------------------------------
+
+4. Copyright:
+-------------
+
+
+
+-----------------------------------------------------------------------
+
+5. How it is done:
+------------------
+
+The service to be exposed is specified as follows: Given a (.txt) document and a model, words in provided document needed to be tagged.
+
+After some investigation it turned out that the module edu.stanford.nlp.tagger.maxent.MaxentTagger.java is the starting point for this service. 
+
+Assumptions:
+	Training has taken place and a model is generated. 
+	
+
+Steps:
+- Identify the relevant modules 
+	See "NOTE:" above
+- Create a module in which the XML-RPC service is to be started, in this case it is called edu/stanford/main/MaxentTaggerServer.java. 
+- Identify the relevant methods from MaxentTagger and copy them into the edu/stanford/main/MaxentTaggerServer.java. 
+	
+	Three methods are identified:
+	  public void runTagger(BufferedReader reader, BufferedWriter writer, String tagInside, boolean stdin)
+   	private static void writeXMLSentence(Writer w, ArrayList<TaggedWord> s, int sentNum)
+   	private static String getXMLWords(ArrayList<TaggedWord> s, int sentNum) 
+
+		
+- Initializations and modifications
+	First we need to do some initializations including loading the model, specifying the output format, encoding etc. 	
+	All these parameters are to be loaded prior to start up the service, this is handled by an instance of TaggerConfig.java
+	TaggerConfig has been extended with additional parameter (serverPort) to handle the port to which the XML-RPC Service is listening to.
+		
+	Where we handle these issues is the main method in module MaxentTaggerServer.java 
+
+	public static void main(String[] args) throws Exception  {			
+		...
+		TaggerConfig config = new TaggerConfig(args);
+		MaxentTaggerServer tagger = new MaxentTaggerServer(config);
+		try {
+			WebServer server = new WebServer(config.getServerPort());
+			//server.setParanoid(true);
+			server.acceptClient(localhost);
+			server.addHandler("tagger", tagger);
+			server.start();
+			System.out.println("MaxentTaggerServer started....Awaiting requests.");
+		} catch (Exception e) {
+			//java.lang.RuntimeException: Address already in use: JVM_Bind
+			System.out.println(e.getMessage());
+		}		
+	}
+	
+		
+ Further down in the constructor of MaxentTaggerServer an instance of MaxentTagger is created with a TaggerConfig object as parameter. 
+	
+	public MaxentTaggerServer(TaggerConfig c) throws IOException, ClassNotFoundException {		
+		config = c;
+		taggerInstance = new MaxentTagger(c.getModel(), c);		
+	}
+	
+	
+- Now we are ready to execute tagger function. 
+	
+	In the stand alone Stanford POS Tagger it is done by invoking following method in edu.stanford.nlp.tagger.maxent.MaxentTagger. 
+
+ 		public void runTagger(BufferedReader reader, BufferedWriter writer, String tagInside, boolean stdin) throws ...     (see line 1289 in MaxentTagger.java)
+
+	We need to make modifications so that given .txt document the method returns a string. The corresponding method in MaxentTaggerServer would look like:
+
+ 		public String runTagger(String input) throws ...
+	
+	That is, given a string "input" (contents of .txt file) a string including tagged words is returned. 		
+	The parameter "input" wrapped to a BufferedReader and other three parameters are eliminated. 
+	
+	We have three other method calls towards MaxentTagger, these methods have gotten their visibility changed to public as mentioned above. 
+	
+	There are two important methods which handle xml formatting of the output. 
+		private static void writeXMLSentence(Writer w, ArrayList<TaggedWord> s, int sentNum)		
+		private static String getXMLWords(ArrayList<TaggedWord> s, int sentNum)
+		
+	These two methods are merged to one singel method with the following definition:
+		private static String writeXMLSentence(ArrayList<TaggedWord> s, int sentNum)
+	The parameter Writer "w" is eliminated.
+		
+		
+
