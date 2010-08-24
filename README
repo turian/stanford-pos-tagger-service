@@ -261,6 +261,3 @@ Steps:
 	These two methods are merged to one singel method with the following definition:
 		private static String writeXMLSentence(ArrayList<TaggedWord> s, int sentNum)
 	The parameter Writer "w" is eliminated.
-		
-		
-
